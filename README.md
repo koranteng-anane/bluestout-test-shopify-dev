@@ -67,11 +67,11 @@ The merchant should be able to customize:
 - [ ] BEM class naming convention
 - [ ] Handle empty state (no metaobject list selected)
 
-## Test 2: Debug the Featured Products Section
+## Test 2: Debug the Liquid Section With Errors
 
 ### Objective
 
-The file `sections/featured-products.liquid` contains errors please find and fix all of them.
+The file `file-with-issues.liquid` contains errors please find and fix all of them.
 
 ### File to Fix
 
