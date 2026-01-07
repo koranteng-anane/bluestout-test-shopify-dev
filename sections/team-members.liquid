@@ -1,0 +1,167 @@
+{% comment %}
+  Team Members Section
+  Displays team members from a metaobject list
+{% endcomment %}
+
+{% liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign show_bio = section.settings.show_bio
+  assign team_members = section.settings.team_members
+%}
+
+<section class="team-members" aria-labelledby="team-members-{{ section.id }}">
+  <div class="team-members__inner">
+    {% if heading != blank %}
+      <header class="team-members__header">
+        <h2 id="team-members-{{ section.id }}" class="team-members__heading">
+          {{ heading }}
+        </h2>
+
+        {% if subheading != blank %}
+          <p class="team-members__subheading">
+            {{ subheading }}
+          </p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {% if team_members == blank or team_members.size == 0 %}
+      <p class="team-members__empty">
+        No team members selected.
+      </p>
+    {% else %}
+      <ul class="team-members__list" role="list">
+        {% for member in team_members %}
+          <li class="team-members__item">
+            <article class="team-members__card">
+              {% if member.photo != blank %}
+                <img
+                  class="team-members__photo"
+                  src="{{ member.photo | image_url: width: 400 }}"
+                  alt="{{ member.name | escape }}"
+                  loading="lazy"
+                >
+              {% endif %}
+
+              <div class="team-members__content">
+                {% if member.name != blank %}
+                  <h3 class="team-members__name">
+                    {{ member.name }}
+                  </h3>
+                {% endif %}
+
+                {% if member.job_title != blank %}
+                  <p class="team-members__title">
+                    {{ member.job_title }}
+                  </p>
+                {% endif %}
+
+                {% if show_bio and member.short_bio != blank %}
+                  <p class="team-members__bio">
+                    {{ member.short_bio }}
+                  </p>
+                {% endif %}
+
+                {% if member.linkedin_url != blank %}
+                  <a
+                    class="team-members__link"
+                    href="{{ member.linkedin_url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                {% endif %}
+              </div>
+            </article>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+
+  <style>
+    .team-members { padding: 48px 0; }
+    .team-members__list {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .team-members__item {
+      flex: 0 0 80%;
+      scroll-snap-align: start;
+    }
+    .team-members__card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 100%;
+    }
+    .team-members__photo {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .team-members__content {
+      padding: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .team-members__list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        overflow: visible;
+      }
+      .team-members__item {
+        flex: none;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .team-members__list {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+    }
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Team members",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Meet the team"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bio",
+      "label": "Show bio",
+      "default": true
+    },
+    {
+      "type": "metaobject_list",
+      "id": "team_members",
+      "label": "Team members",
+      "metaobject_type": "team_members"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Team members"
+    }
+  ]
+}
+{% endschema %}
