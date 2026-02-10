@@ -1,13 +1,26 @@
+
+{%- comment -%} 
+  FIX #1: Need to add , into schema after "name": "Featured Products" 
+  FIX #2: Need to remove , into schema after section Heading because it is not a good practice in previous verison of shopify it makes error but in updated shopify in nowadays it is not maing error but it is not a good thing.
+  FIX #3: Need to add , into schema after h2 value.
+  FIX #4: Need to add , into schema after "type": "color".
+  FIX #5: Need to add default value into range becaue it is required in rang type in schmea I added "default": 3.
+  FIX #6: Need to add if condition into liquid code before heading print if there is no text then this will generate empty heading tags so I added it on line 63.
+  FIX #7: Need to add if condition into liquid code before fetaured image if there is no image then this will make issue so I added it on line 73.
+  FIX #8: for SEO best practice we need to use some heading tag for product name so i made it h3 on line 89.
+  FIX #9: in addToCart function we waspassing ony first varaint id but of it is not availabe it will make issue I passed the product.selected_or_first_available_variant.id this will make sure to pass varaint that is avaialble also we can add some conditions there as well but this depends on UI and store functionality for example on that functions if we have muktpleoptions then we can show a popup and all stuff also.
+  FIX #10: Instead of Hard coded Add to cart text we need to add text from section settings or from locals files so if we work with multi language store then wthis will not make an issue.
+{%- endcomment -%}
 {% schema %}
 {
-  "name": "Featured Products"
+  "name": "Featured Products",
   "tag": "section",
   "class": "featured-products",
   "settings": [
     {
       "type": "text",
       "id": "heading",
-      "label": "Section Heading",
+      "label": "Section Heading"
     },
     {
       "type": "select",
@@ -15,13 +28,13 @@
       "label": "Heading Tag",
       "options": [
         { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" }
+        { "value": "h2", "label": "H2" },
         { "value": "h3", "label": "H3" }
       ],
       "default": "h2"
     },
     {
-      "type": "color"
+      "type": "color",
       "id": "background_color",
       "label": "Background Color",
       "default": "#ffffff"
@@ -32,7 +45,8 @@
       "min": 2,
       "max": 8,
       "step": 1,
-      "label": "Number of Products"
+      "label": "Number of Products",
+      "default": 3
     },
     {
       "type": "collection",
@@ -50,31 +64,31 @@
 
 <div class="featured-products" style="background-color: {{ section.settings.background_color }}">
   <div class="featured-products__container page-width">
-    
-    <{{ section.settings.heading_tag }} class="featured-products__heading">
-      {{ section.settings.heading }}
-    </{{ section.settings.heading_tag }}>
-
+    {% if section.settings.heading != blank %}
+      <{{ section.settings.heading_tag }} class="featured-products__heading">
+        {{ section.settings.heading }}
+      </{{ section.settings.heading_tag }}>
+    {% endif %}
     {% if section.settings.collection != blank %}
       <div class="featured-products__grid">
         {% for product in section.settings.collection.products limit: section.settings.products_count %}
           <div class="featured-products__card">
-            
-            <div 
-              class="featured-products__image-link"
-              role="link"
-              onclick="window.location='{{ product.url }}'"
-            >
-              <img 
-                src="{{ product.featured_image | image_url: width: 600 }}"
-                width="600"
-                height="600"
-                loading="lazy"
-              >
-            </div>
-
+            {% if product.featured_image != blank %}
+              <div 
+                  class="featured-products__image-link"
+                  role="link"
+                  onclick="window.location='{{ product.url }}'"
+                >
+                  <img 
+                    src="{{ product.featured_image | image_url: width: 600 }}"
+                    width="600"
+                    height="600"
+                    loading="lazy"
+                  >
+                </div>
+            {% endif %}
             <div class="featured-products__info">
-              <div class="featured-products__title">{{ product.title }}</div>
+              <h3 class="featured-products__title">{{ product.title }}</h3>
               
               <div class="featured-products__price">
                 {% if product.compare_at_price > product.price %}
@@ -91,7 +105,7 @@
                 class="featured-products__button"
                 role="button"
                 tabindex="0"
-                onclick="addToCart({{ product.variant.first.id }})"
+                onclick="addToCart({{ product.selected_or_first_available_variant.id }})"
               >
                 Add to Cart
               </div>
