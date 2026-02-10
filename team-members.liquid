@@ -1,0 +1,178 @@
+<style>
+  .team-member {
+    padding: 60px 0;
+    background: {{ section.settings.section_bg_color | default: "#FFFFFF" }};
+    overflow-x: hidden;
+  }
+
+  .team-member * {
+    color: {{ section.settings.text_color | default: "#000000" }};
+    line-height: 1;
+    letter-spacing: 0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .team-member__container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .team-member__header {
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .team-member__heading {
+    font-size: 30px;
+    text-align: center;
+  }
+
+  .team-member__heading,
+  .team-member__block-name {
+    font-size: 25px;
+  }
+
+  .team-member__block-bio,
+  .team-member__block-bio * {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .team-member__blocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .team-member__block {
+    flex: 0 0 calc(33.33% - 15px);
+  }
+
+  .team-member__block-media-wrapper img {
+    max-width: 100%;
+    width: 100%;
+    object-fit: cover;
+    display: block;
+    height: auto;
+  }
+
+  @media (max-width: 1024px) {
+    .team-member__block {
+      flex: 0 0 calc(50% - 10px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .team-member__block {
+      flex: 0 0 auto;
+      min-width: 50%;
+      width: 50%;
+    }
+
+    .team-member__blocks {
+      flex-wrap: nowrap;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      scroll-padding: 0 10px;
+    }
+  }
+</style>
+
+<section class="team-member">
+  <div class="team-member__container">
+    {% if section.settings.heading != blank or section.settings.subheading != blank %}
+      <div class="team-member__header">
+        {% if section.settings.heading != blank %}
+          <h2 class="team-member__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <h3 class="team-member__subheading">{{ section.settings.subheading }}</h3>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% assign teamMembers = shop.metaobjects.team_members.values %}
+    {% if teamMembers != blank %}
+      <div class="team-member__blocks">
+        {% for teamMember in teamMembers %}
+          <div class="team-member__block team-member__block--{{ forloop.index }}">
+            {% if teamMember.photo != blank %}
+              <div class="team-member__block-media-wrapper">
+                {{ teamMember.photo | image_url: width: teamMember.photo.width | image_tag: alt: teamMember.photo.alt }}
+              </div>
+            {% endif %}
+            {% if teamMember.name != blank %}
+              <h4 class="team-member__block-name" aria-label="Team Member Name">{{ teamMember.name }}</h4>
+            {% endif %}
+            {% if teamMember.job_title != blank %}
+              <h5 class="team-member__block-job" aria-label="Team Member Job">{{ teamMember.job_title }}</h5>
+            {% endif %}
+            {% unless section.settings.hide_bio == true %}
+              {% if teamMember.short_bio != blank %}
+                <div class="team-member__block-bio"  aria-label="Team Member Bio">
+                  {{ teamMember.short_bio | metafield_tag }}
+                </div>
+              {% endif %}
+            {% endunless %}
+            {% if teamMember.likedin_link != blank %}
+              <a href="{{ teamMember.likedin_link | escape }}" class="team-member__block-link" target="_blank" aria-label="Team Member Linkedin Link">Linkedin</a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Team Members",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Headings"
+      },
+      {
+        "type": "text",
+        "label": "Heading",
+        "id": "heading"
+      },
+      {
+        "type": "text",
+        "label": "Subheading",
+        "id": "subheading"
+      },
+      {
+        "type": "header",
+        "content": "Bio Setting"
+      },
+      {
+        "type": "checkbox",
+        "label": "Hide Bio Description",
+        "id": "hide_bio"
+      },
+      {
+        "type": "header",
+        "content": "Color Settings"
+      },
+      {
+        "type": "color",
+        "label": "Text Color",
+        "id": "text_color",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "label": "Section Background Color",
+        "id": "section_bg_color",
+        "default": "#FFFFFF"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Team Members"
+      }
+    ]
+  }
+{% endschema %}
