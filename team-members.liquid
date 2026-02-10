@@ -1,0 +1,66 @@
+
+    <style>
+
+    .bio_wrapper {
+    }
+    .custom___backgroundColor {
+     background-color: {{ section.settings.section_color}};
+    }
+    </style>
+
+<section id="{{ section.id }}" class="bio_wrapper">
+    <h1>{{ section.settings.section_title }}</h1>
+    <h5>{{ section.settings.section_subheading }}</h5>
+    
+    {% for member in section.settings.section_members %}
+  
+
+    <p> {{ member.job_title.value  }}</p>
+       <p> {{ member.name.value  }}</p>
+    {% if section.settings.is_visible !=blank and section.settings.is_visible == true %}
+        <p> {{ member.short_bio.value  }}</p>
+    {% endif %}       
+    {% endfor %}
+   
+    
+</section>
+
+{% schema %}
+{
+    "name":"Team Members (custom)",
+    "settings": [
+        {
+         "type": "text",
+         "default":"Your Section Title",
+         "id": "section_title",
+          "label": "Section Title"
+        },
+         {
+         "type": "text",
+         "default":"Your Section Subheading",
+         "id": "section_subheading",
+          "label": "Section Subheading"
+        },
+         {
+          "type": "checkbox",
+           "id": "is_visible",
+           "label":"Show Bio"
+        },
+        {
+          "type": "color",
+           "id":"section_color",
+           "label":"Color"
+        },
+        {
+        
+            "type": "metaobject_list",
+            "metaobject_type": "member_team",
+            "id": "section_members",
+            "label": "Members"
+        }
+    ],
+    "presets": [ {
+    "name": "Team members (custom)"
+    }]
+}
+{% endschema %}
