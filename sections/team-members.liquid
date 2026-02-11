@@ -1,0 +1,119 @@
+{% liquid assign team_members = shop.metaobjects.team_members.values 
+assign show_bio = section.settings.show_bio %}
+
+<section class="team_members">
+	
+	<div class="team_member-grid">
+	
+	{% for member in team_members %}
+	
+	
+	<div class="team_member-single">
+		
+		{% if section.settings.member-img != blank %}
+		<div class="team-member-img">
+			<img src="{{ member-img | image_url: width : 400 }} alt="Image Name" >
+		</div>
+		{% endif %}		
+		
+		
+		<div class="team-member-name">
+			{% if section.settings.member-name != blank %}
+			<h2 class="team-member-heading">
+			{{ section.settings.member-name }}
+			</h2>
+			{% endif %}
+		</div>
+		
+		{% if section.settings.member-job-title != blank %}
+		<div class="member-job-title">
+			<h4 class=".h4">{{ section.settings.job-title}}</h4>
+		</div>
+		{% endif %}
+		
+		{%liquid assign show_bio = section.settings.show_bio %}
+		
+		{% if show_bio and section.settings.member-short-bio != blank %}
+		<div class="member-short-bio">
+			<p class="member-bio-content">{{ section.settings.member-short-bio}}</p>
+		</div>
+		{% endif %}		
+		
+		{% if section.settings.member-linkedin != blank %}
+		<div class="member-linkedin">
+			<a href="{{ section.settings.member-linkedin}}" class="member-linkedin-url">LinkedIn</a>
+		</div>
+		{% endif %}		
+		
+		
+	</div>
+	
+	{% endfor %}
+	
+</div>	
+</section>
+
+<style>
+
+.team_members {
+	background: var (--tm-bg);
+	padding: 40px 0;
+}
+
+.team_member-grid {
+	display: grid;
+	gap: 20px;
+}
+
+.member-job-title .h4 {
+	color: var (--nc-color)
+}
+
+
+/* For Mobile */
+@media only screen and (max-width: 768px) {
+
+.team_member-grid {
+	display: flex;
+	scroll-snap-align: start;
+}
+
+}
+
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+.team_member-grid {
+	grid-template-columns: repeat(2,1fr);
+}
+
+}
+
+
+</style>
+
+{% schema %}
+{
+  "name": "Team Members",
+  "settings": [
+    {
+      "type": "text",
+      "id": "member-name",
+      "label": "heading"
+    }
+  ],
+  "max_blocks": 5,
+  "blocks": [
+     {
+		"type": "checkbox"'
+		"id": "show_bio",
+		default: true
+     },
+	 {
+		"type": "color"'
+		"id": "name-color",
+		default: #000000
+     }
+  ]
+{% endschema %}

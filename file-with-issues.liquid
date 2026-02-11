@@ -1,6 +1,11 @@
+{%- comment -%} FIX #1: Added missing comma after "name": "Featured Products" {%- endcomment -%}
+{%- comment -%} FIX #2: Added missing comma after "type": "color" {%- endcomment -%}
+{%- comment -%} FIX #3: Added missing comma between { "value": "h2", "label": "H2" } , { "value": "h3", "label": "H3" }{%- endcomment -%}
+
+
 {% schema %}
 {
-  "name": "Featured Products"
+  "name": "Featured Products",
   "tag": "section",
   "class": "featured-products",
   "settings": [
@@ -15,13 +20,13 @@
       "label": "Heading Tag",
       "options": [
         { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" }
+        { "value": "h2", "label": "H2" },
         { "value": "h3", "label": "H3" }
       ],
       "default": "h2"
     },
     {
-      "type": "color"
+      "type": "color",
       "id": "background_color",
       "label": "Background Color",
       "default": "#ffffff"
@@ -48,53 +53,58 @@
 }
 {% endschema %}
 
+
 <div class="featured-products" style="background-color: {{ section.settings.background_color }}">
   <div class="featured-products__container page-width">
-    
-    <{{ section.settings.heading_tag }} class="featured-products__heading">
-      {{ section.settings.heading }}
-    </{{ section.settings.heading_tag }}>
+
+{%- comment -%} FIX #4: Heading should only rendered when its not blank {%- endcomment -%}    
+
+{% if section.settings.heading != blank %}
+      <{{ section.settings.heading_tag }} class="featured-products__heading">
+        {{ section.settings.heading }}
+      </{{ section.settings.heading_tag }}>
+    {% endif %}
 
     {% if section.settings.collection != blank %}
       <div class="featured-products__grid">
         {% for product in section.settings.collection.products limit: section.settings.products_count %}
           <div class="featured-products__card">
             
-            <div 
-              class="featured-products__image-link"
-              role="link"
-              onclick="window.location='{{ product.url }}'"
-            >
-              <img 
+			{%- comment -%} FIX #5: Replaced clickable div with anchor tag {%- endcomment -%}
+			
+            <a href="{{ product.url }}" class="featured-products__image-link">
+              
+			  {%- comment -%} FIX #6: Added alt for img {%- endcomment -%}
+			  <img 
                 src="{{ product.featured_image | image_url: width: 600 }}"
                 width="600"
                 height="600"
-                loading="lazy"
+                loading="lazy" alt="{{ product.title }}"
               >
-            </div>
+            </a>
 
             <div class="featured-products__info">
               <div class="featured-products__title">{{ product.title }}</div>
-              
+              {%- comment -%} FIX #7: Applied money filter format prices correctly {%- endcomment -%}
               <div class="featured-products__price">
                 {% if product.compare_at_price > product.price %}
                   <span class="featured-products__price--sale">
-                    {{ product.price }}
+                    {{ product.price | money }}
                   </span>
-                  <s>{{ product.compare_at_price }}</s>
+                  <s>{{ product.compare_at_price | money }}</s>
                 {% else %}
-                  {{ product.price }}
+                  {{ product.price | money }}
                 {% endif %}
               </div>
-
-              <div 
-                class="featured-products__button"
-                role="button"
-                tabindex="0"
-                onclick="addToCart({{ product.variant.first.id }})"
-              >
-                Add to Cart
-              </div>
+			
+			{%- comment -%} FIX #8: incorrect format for AddtoCart, also variant reference "product.variant.first.id" changed to "product.first_available_variant.id" {%- endcomment -%}	
+			
+              <form method="post" action="/cart/add">
+                <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+                <button type="submit" class="featured-products__button">
+                  Add to Cart
+                </button>
+              </form>
             </div>
 
           </div>
@@ -143,4 +153,36 @@
   text-align: center;
   cursor: pointer;
 }
+
+/* {%- comment -%} FIX #8: Added Responsive Behavior {%- endcomment -%} */
+
+@media only screen and (min-width: 768px) {
+
+  .featured-products__grid {
+    display: flex;
+    scroll-snap-type: x mandatory;
+    scroll-snap-align: start;
+    gap: 16px;
+  }
+
+	.featured-products__card {
+		flex: 0 0 80%;
+		scroll-snap-align: start;
+	}
+		
+}
+
+
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  .featured-products__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .featured-products__card {
+    flex: unset;
+  }
+}
+
 {% endstylesheet %}
